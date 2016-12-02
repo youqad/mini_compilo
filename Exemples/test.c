@@ -8,9 +8,8 @@ int main() {
     tab[2] = 3;
 
 
-    tab[printf("2"), 0] = (printf("3"), 0);
-    tab[tab[0]++]++;
+    //tab[printf("2"), 0] = (printf("3"), 0);
+    printf("%d", tab[tab[0]++]++);
 
-    printf("%d", (a=b=3));
     return 0;
 }

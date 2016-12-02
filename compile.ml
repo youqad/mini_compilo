@@ -162,6 +162,8 @@ let compile out decl_list =
           (* when a "return statement" is reached : one quits the function *)
           Printf.fprintf out "\tjmp %s \t# return reached : end function\n" endFunctionLabel
         )
+      | CTHROW(str, loc_expr) -> ()
+      | CTRY(loc_code, str_str_loc_list, loc_code_option) -> ()
 
     and compile_expr current_fun env_var offset_local_vars = function
       | VAR(str) ->
@@ -267,29 +269,40 @@ let compile out decl_list =
           | M_POST_DEC -> "dec", 1, true
           | M_PRE_DEC -> "dec", 0, true in (
 
-          compile_expr current_fun env_var offset_local_vars expr;
+          if (not modifies_variable) or (match expr with VAR(_) -> true | _ -> false) then (
 
-          (* the value of expr is stored in for later, if needed *)
-          if is_post=1 then Printf.fprintf out "\tpushq %%rax\t# the value of expr is stored in for later\n";
+            compile_expr current_fun env_var offset_local_vars expr;
 
-          Printf.fprintf out "\t%s %%rax\n" op;
+            (* the value of expr is stored in for later, if needed *)
+            if is_post=1 then Printf.fprintf out "\tpushq %%rax\t# the value of expr is stored in for later\n";
+
+            Printf.fprintf out "\t%s %%rax\n" op
+          );
 
           (* When it comes to Inc/Dec : the l-value must also be modified *)
           if modifies_variable then (
             match expr with
             | VAR(str) ->  let var = StringMap.find str env_var in
-              Printf.fprintf out "\tmovq %%rax, %s\n" var;
+                Printf.fprintf out "\tmovq %%rax, %s\n" var
             | OP2(bin_op, (_, e1), (_,e2)) when bin_op = S_INDEX ->(
               (* the l-value is ensured to be at most a one dimensional access to an array *)
                 match e1 with
                 | VAR(str) -> let my_array = StringMap.find str env_var in (
-                    Printf.fprintf out "\tpushq %%rax\n";
-                    compile_expr current_fun env_var (offset_local_vars-8-8*is_post) e2;
-                    Printf.fprintf out "\tpopq %%rcx\n";
-                    (* now expr is in %rcx, e2 in %rax *)
+
+                    compile_expr current_fun env_var offset_local_vars e2;
+                    (* e2 in %rax *)
 
                     Printf.fprintf out "\tmovq %s, %%rdx\n" my_array;
+
+                    Printf.fprintf out "\tmovq (%%rdx, %%rax, 8), %%rcx\n";
+
+                    (* the value of expr is stored in for later, if needed *)
+                    if is_post=1 then Printf.fprintf out "\tpushq %%rcx\t# the value of expr is stored in for later\n";
+
+                    Printf.fprintf out "\t%s %%rcx\n" op;
+
                     Printf.fprintf out "\tmovq %%rcx, (%%rdx, %%rax, 8)\n";
+
                     Printf.fprintf out "\tmovq %%rcx, %%rax\n"
                   )
                 | _ -> failwith "Error OP2")
