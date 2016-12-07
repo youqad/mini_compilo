@@ -168,7 +168,10 @@ let compile out decl_list =
           (* when a "return statement" is reached : one quits the function *)
           Printf.fprintf out "\tjmp %s \t# return reached : end function\n" endFunctionLabel
         )
-      | CTHROW(str, loc_expr) -> ()
+      | CTHROW(str, loc_expr) -> (
+
+          
+        )
       | CTRY(loc_code, str_str_loc_list, loc_code_option) -> ()
 
     and compile_expr current_fun env_var offset_local_vars = function
