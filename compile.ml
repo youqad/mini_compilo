@@ -58,6 +58,13 @@ let compile out decl_list =
     | CRETURN(loc_expr_option) -> (match loc_expr_option with
       | Some (_, expr) -> add_str_to_env_from_expr env expr
       | None -> env)
+    | CTHROW(_, (_, expr)) -> add_str_to_env_from_expr env expr
+    | CTRY((_, code), str_str_locCode_list, loc_code_option) -> (let env2 = add_str_to_env_from_code env code in
+      let env3 = fold_left (fun env' (_,_,(_,code')) -> add_str_to_env_from_code env' code') env2 str_str_locCode_list in
+      (match loc_code_option with
+       | Some (_, code') -> add_str_to_env_from_code env3 code'
+       | None -> env3)
+      )
   and add_str_to_env_from_expr env = function
     | STRING(str) -> StringMap.add str (genlab "string") env
     | VAR(_) | CST(_) -> env
@@ -153,7 +160,6 @@ let compile out decl_list =
             (* end while *)
             Printf.fprintf out "%s:\n" endWhile;
           )
-
       | CRETURN(loc_expr_option) -> (
           (match loc_expr_option with
               | Some (_, expr) -> compile_expr current_fun env_var offset_local_vars expr
@@ -162,7 +168,10 @@ let compile out decl_list =
           (* when a "return statement" is reached : one quits the function *)
           Printf.fprintf out "\tjmp %s \t# return reached : end function\n" endFunctionLabel
         )
-      | CTHROW(str, loc_expr) -> ()
+      | CTHROW(str, loc_expr) -> (
+
+          
+        )
       | CTRY(loc_code, str_str_loc_list, loc_code_option) -> ()
 
     and compile_expr current_fun env_var offset_local_vars = function
@@ -441,4 +450,14 @@ let compile out decl_list =
 (* debugging tool :
    if not (StringMap.mem str env_strings) then (let str_err = (StringMap.fold (fun key value s -> (s^"-"^key)) env_strings "") in failwith ("Erreur 175 ! "^str_err) )
    else
+*)
+
+
+(*
+
+Exceptions :
+
+  1) get the names of exceptions
+  2)
+
 *)
