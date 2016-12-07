@@ -93,7 +93,7 @@ let compile out decl_list =
     (* The tricky part : compiling functions *)
 
     (* an auxiliary function to compile the code within global functions *)
-    let rec compile_code current_fun endFunctionLabel env_var offset_local_vars = function
+    let rec compile_code current_fun endFunctionLabel env_var env_exceptions offset_local_vars = function
       | CBLOCK(dec_list, loc_code_list) -> let nb_local_vars = length dec_list in
         (
           (* First :
@@ -112,11 +112,11 @@ let compile out decl_list =
           let _ = fold_left (fun reached_return code -> match (reached_return, code) with
                       | (true, _) -> true
                       | (_, (CRETURN(_) as code_return)) -> (
-                          compile_code current_fun endFunctionLabel new_env_var new_offset_local_vars code_return;
+                          compile_code current_fun endFunctionLabel new_env_var env_exceptions new_offset_local_vars code_return;
                           true
                         )
                       | (_, other_code) -> (
-                          compile_code current_fun endFunctionLabel new_env_var new_offset_local_vars other_code;
+                          compile_code current_fun endFunctionLabel new_env_var env_exceptions new_offset_local_vars other_code;
                           false
                         )
                   ) false (snd (List.split loc_code_list)) in ();
@@ -137,10 +137,10 @@ let compile out decl_list =
           let endIf = (genlab (current_fun^"_endIf")) and failureIf = (genlab (current_fun^"_failureIf")) in
           (
             Printf.fprintf out "\tje %s\n" failureIf;
-            compile_code current_fun endFunctionLabel env_var offset_local_vars code1;
+            compile_code current_fun endFunctionLabel env_var env_exceptions offset_local_vars code1;
             Printf.fprintf out "\tjmp %s\n" endIf;
             Printf.fprintf out "%s:\n" failureIf;
-            compile_code current_fun endFunctionLabel env_var offset_local_vars code2;
+            compile_code current_fun endFunctionLabel env_var env_exceptions offset_local_vars code2;
             Printf.fprintf out "%s:\n" endIf;
           )
         )
@@ -155,7 +155,7 @@ let compile out decl_list =
             (* compare expr to zero *)
             Printf.fprintf out "\tcmpq $0, %%rax\n";
             Printf.fprintf out "\tje %s\n" endWhile;
-            compile_code current_fun endFunctionLabel env_var offset_local_vars code;
+            compile_code current_fun endFunctionLabel env_var env_exceptions offset_local_vars code;
             Printf.fprintf out "\tjmp %s\n" loopWhile;
             (* end while *)
             Printf.fprintf out "%s:\n" endWhile;
@@ -168,11 +168,15 @@ let compile out decl_list =
           (* when a "return statement" is reached : one quits the function *)
           Printf.fprintf out "\tjmp %s \t# return reached : end function\n" endFunctionLabel
         )
-      | CTHROW(str, loc_expr) -> (
+      | CTHROW(str, (_, expr)) -> (
 
-          
+
         )
-      | CTRY(loc_code, str_str_loc_list, loc_code_option) -> ()
+      | CTRY((_, code), str_str_loc_list, loc_code_option) -> (
+
+
+
+        )
 
     and compile_expr current_fun env_var offset_local_vars = function
       | VAR(str) ->
@@ -434,7 +438,7 @@ let compile out decl_list =
             (* a label to reach the end of the function in case of "return statement" *)
             let endFunctionLabel = (genlab (fun_label^"_endFunction")) in
               (
-                compile_code fun_label endFunctionLabel new_env_var (-(min nb_args 6)*8) code;
+                compile_code fun_label endFunctionLabel new_env_var (StringMap.empty) (-(min nb_args 6)*8) code;
                 Printf.fprintf out "%s:\n" endFunctionLabel;
 
                 (* restoring callee-saved registers, and %rbp *)
