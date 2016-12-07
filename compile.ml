@@ -58,6 +58,12 @@ let compile out decl_list =
     | CRETURN(loc_expr_option) -> (match loc_expr_option with
       | Some (_, expr) -> add_str_to_env_from_expr env expr
       | None -> env)
+    | CTHROW(_, (_, expr)) -> add_str_to_env_from_expr env expr
+    | CTRY((_, code), str_str_loc_list, loc_code_option) -> (let env' = add_str_to_env_from_code env code in
+      (match loc_code_option with
+       | Some (_, expr) -> add_str_to_env_from_expr env' expr
+       | None -> env')
+      )
   and add_str_to_env_from_expr env = function
     | STRING(str) -> StringMap.add str (genlab "string") env
     | VAR(_) | CST(_) -> env
@@ -153,7 +159,6 @@ let compile out decl_list =
             (* end while *)
             Printf.fprintf out "%s:\n" endWhile;
           )
-
       | CRETURN(loc_expr_option) -> (
           (match loc_expr_option with
               | Some (_, expr) -> compile_expr current_fun env_var offset_local_vars expr
@@ -441,4 +446,14 @@ let compile out decl_list =
 (* debugging tool :
    if not (StringMap.mem str env_strings) then (let str_err = (StringMap.fold (fun key value s -> (s^"-"^key)) env_strings "") in failwith ("Erreur 175 ! "^str_err) )
    else
+*)
+
+
+(*
+
+Exceptions :
+
+  1) get the names of exceptions
+  2)
+
 *)
