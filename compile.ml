@@ -59,10 +59,11 @@ let compile out decl_list =
       | Some (_, expr) -> add_str_to_env_from_expr env expr
       | None -> env)
     | CTHROW(_, (_, expr)) -> add_str_to_env_from_expr env expr
-    | CTRY((_, code), str_str_loc_list, loc_code_option) -> (let env' = add_str_to_env_from_code env code in
+    | CTRY((_, code), str_str_locCode_list, loc_code_option) -> (let env2 = add_str_to_env_from_code env code in
+      let env3 = fold_left (fun env' (_,_,(_,code')) -> add_str_to_env_from_code env' code') env2 str_str_locCode_list in
       (match loc_code_option with
-       | Some (_, expr) -> add_str_to_env_from_expr env' expr
-       | None -> env')
+       | Some (_, code') -> add_str_to_env_from_code env3 code'
+       | None -> env3)
       )
   and add_str_to_env_from_expr env = function
     | STRING(str) -> StringMap.add str (genlab "string") env
