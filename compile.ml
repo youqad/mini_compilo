@@ -44,36 +44,36 @@ let compile out decl_list =
 
   (* second round : a Map is used to store the labels of strings
      in a string environment *)
-  let rec add_str_to_env_from_decl env = function
-    | CDECL(_) -> env
-    | CFUN(_, str, dec_list, (_, code)) -> add_str_to_env_from_code env code
+  let rec add_str_and_excep_to_env_from_decl (env_str, env_excep) = function
+    | CDECL(_) -> env_str, env_excep
+    | CFUN(_, str, dec_list, (_, code)) -> add_str_and_excep_to_env_from_code (env_str, env_excep) code
 
-  and add_str_to_env_from_code env = function
-    | CBLOCK(_, loc_code_list) -> fold_left add_str_to_env_from_code env (snd (List.split loc_code_list))
-    | CEXPR(_, expr) -> add_str_to_env_from_expr env expr
-    | CIF((_, expr1), (_, code1), (_, code2)) -> let env' = add_str_to_env_from_expr env expr1 in
-      fold_left add_str_to_env_from_code env' [code1; code2]
-    | CWHILE((_, expr), (_, code)) -> let env' = add_str_to_env_from_expr env expr in
-      add_str_to_env_from_code env' code
+  and add_str_and_excep_to_env_from_code (env_str, env_excep) = function
+    | CBLOCK(_, loc_code_list) -> fold_left add_str_and_excep_to_env_from_code (env_str, env_excep) (snd (List.split loc_code_list))
+    | CEXPR(_, expr) -> add_str_and_excep_to_env_from_expr (env_str, env_excep) expr
+    | CIF((_, expr1), (_, code1), (_, code2)) -> let env' = add_str_and_excep_to_env_from_expr (env_str, env_excep) expr1 in
+      fold_left add_str_and_excep_to_env_from_code (fst env') (snd env') [code1; code2]
+    | CWHILE((_, expr), (_, code)) -> let env' = add_str_and_excep_to_env_from_expr env expr in
+      add_str_and_excep_to_env_from_code (fst env') (snd env') code
     | CRETURN(loc_expr_option) -> (match loc_expr_option with
-      | Some (_, expr) -> add_str_to_env_from_expr env expr
-      | None -> env)
-    | CTHROW(_, (_, expr)) -> add_str_to_env_from_expr env expr
-    | CTRY((_, code), str_str_locCode_list, loc_code_option) -> (let env2 = add_str_to_env_from_code env code in
-      let env3 = fold_left (fun env' (_,_,(_,code')) -> add_str_to_env_from_code env' code') env2 str_str_locCode_list in
+      | Some (_, expr) -> add_str_and_excep_to_env_from_expr (env_str, env_excep) expr
+      | None -> (env_str, env_excep))
+    | CTHROW(_, (_, expr)) -> add_str_and_excep_to_env_from_expr (env_str, env_excep) expr
+    | CTRY((_, code), str_str_locCode_list, loc_code_option) -> (let env2 = add_str_and_excep_to_env_from_code (env_str, env_excep) code in
+      let env3 = fold_left (fun env' (str,_,(_,code')) -> add_str_and_excep_to_env_from_code env' code') (fst env2, StringMap.add str (genlab "exception") (snd env2)) str_str_locCode_list in
       (match loc_code_option with
-       | Some (_, code') -> add_str_to_env_from_code env3 code'
+       | Some (_, code') -> add_str_and_excep_to_env_from_code env3 code'
        | None -> env3)
       )
-  and add_str_to_env_from_expr env = function
-    | STRING(str) -> StringMap.add str (genlab "string") env
-    | VAR(_) | CST(_) -> env
-    | SET_VAR(_, (_, expr)) | OP1(_, (_, expr)) -> add_str_to_env_from_expr env expr
-    | SET_ARRAY(_, (_, expr1), (_, expr2)) | OP2(_, (_, expr1), (_, expr2)) | CMP(_, (_,expr1), (_, expr2)) -> fold_left add_str_to_env_from_expr env [expr1; expr2]
-    | EIF((_, expr1), (_, expr2), (_, expr3)) -> fold_left add_str_to_env_from_expr env [expr1; expr2; expr3]
-    | CALL(_, loc_expr_list) | ESEQ(loc_expr_list) -> fold_left add_str_to_env_from_expr env (snd (List.split loc_expr_list)) in
+  and add_str_and_excep_to_env_from_expr (env_str, env_excep) = function
+    | STRING(str) -> StringMap.add str (genlab "string") env_str, env_excep
+    | VAR(_) | CST(_) -> (env_str, env_excep)
+    | SET_VAR(_, (_, expr)) | OP1(_, (_, expr)) -> add_str_and_excep_to_env_from_expr (env_str, env_excep) expr
+    | SET_ARRAY(_, (_, expr1), (_, expr2)) | OP2(_, (_, expr1), (_, expr2)) | CMP(_, (_,expr1), (_, expr2)) -> fold_left add_str_and_excep_to_env_from_expr env [expr1; expr2]
+    | EIF((_, expr1), (_, expr2), (_, expr3)) -> fold_left add_str_and_excep_to_env_from_expr env [expr1; expr2; expr3]
+    | CALL(_, loc_expr_list) | ESEQ(loc_expr_list) -> fold_left add_str_and_excep_to_env_from_expr env (snd (List.split loc_expr_list)) in
 
-  let env_strings = fold_left add_str_to_env_from_decl (StringMap.empty) decl_list in
+  let env_strings, env_excep = fold_left add_str_and_excep_to_env_from_decl (StringMap.empty, StringMap.empty) decl_list in
   (
     (* Firstly : printing the data section *)
     Printf.fprintf out ".data\n\n";
