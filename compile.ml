@@ -282,7 +282,7 @@ let compile out decl_list =
           | M_POST_DEC -> "dec", 1, true
           | M_PRE_DEC -> "dec", 0, true in (
 
-          if (not modifies_variable) or (match expr with VAR(_) -> true | _ -> false) then (
+          if (not modifies_variable) || (match expr with VAR(_) -> true | _ -> false) then (
 
             compile_expr current_fun env_var offset_local_vars expr;
 
@@ -300,7 +300,7 @@ let compile out decl_list =
             | OP2(bin_op, (_, e1), (_,e2)) when bin_op = S_INDEX ->(
               (* the l-value is ensured to be at most a one dimensional access to an array *)
                 match e1 with
-                | VAR(str) -> let my_array = StringMap.find str env_var in (
+                | VAR  (str) -> let my_array = StringMap.find str env_var in (
 
                     compile_expr current_fun env_var offset_local_vars e2;
                     (* e2 in %rax *)
