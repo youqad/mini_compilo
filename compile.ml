@@ -74,7 +74,7 @@ let compile out decl_list =
     | CALL(_, loc_expr_list) | ESEQ(loc_expr_list) -> fold_left add_str_to_env_from_expr env (snd (List.split loc_expr_list)) in
 
   let env_strings = fold_left add_str_to_env_from_decl (StringMap.empty) decl_list in
-  let exception_raised = ref false in
+  let exception_not_caught = ref false in
   (
     (* Firstly : printing the data section *)
     Printf.fprintf out ".data\n\n";
@@ -94,7 +94,7 @@ let compile out decl_list =
     (* The tricky part : compiling functions *)
 
     (* an auxiliary function to compile the code within global functions *)
-    let rec compile_code current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars = function
+    let rec compile_code current_fun endFunctionLabel is_in_finally finallyLabel env_var env_exceptions offset_local_vars = function
       | CBLOCK(dec_list, loc_code_list) -> let nb_local_vars = length dec_list in
         (
           (* First :
@@ -113,11 +113,11 @@ let compile out decl_list =
           let _ = fold_left (fun reached_return code -> match (reached_return, code) with
                       | (true, _) -> true
                       | (_, (CRETURN(_) as code_return)) -> (
-                          compile_code current_fun endFunctionLabel finallyLabel new_env_var env_exceptions new_offset_local_vars code_return;
+                          compile_code current_fun endFunctionLabel is_in_finally finallyLabel new_env_var env_exceptions new_offset_local_vars code_return;
                           true
                         )
                       | (_, other_code) -> (
-                          compile_code current_fun endFunctionLabel finallyLabel new_env_var env_exceptions new_offset_local_vars other_code;
+                          compile_code current_fun endFunctionLabel is_in_finally finallyLabel new_env_var env_exceptions new_offset_local_vars other_code;
                           false
                         )
                   ) false (snd (List.split loc_code_list)) in ();
@@ -138,10 +138,10 @@ let compile out decl_list =
           let endIf = (genlab (current_fun^"_endIf")) and failureIf = (genlab (current_fun^"_failureIf")) in
           (
             Printf.fprintf out "\tje %s\n" failureIf;
-            compile_code current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars code1;
+            compile_code current_fun endFunctionLabel is_in_finally finallyLabel env_var env_exceptions offset_local_vars code1;
             Printf.fprintf out "\tjmp %s\n" endIf;
             Printf.fprintf out "%s:\n" failureIf;
-            compile_code current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars code2;
+            compile_code current_fun endFunctionLabel is_in_finally finallyLabel env_var env_exceptions offset_local_vars code2;
             Printf.fprintf out "%s:\n" endIf;
           )
         )
@@ -156,12 +156,13 @@ let compile out decl_list =
             (* compare expr to zero *)
             Printf.fprintf out "\tcmpq $0, %%rax\n";
             Printf.fprintf out "\tje %s\n" endWhile;
-            compile_code current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars code;
+            compile_code current_fun endFunctionLabel is_in_finally finallyLabel env_var env_exceptions offset_local_vars code;
             Printf.fprintf out "\tjmp %s\n" loopWhile;
             (* end while *)
             Printf.fprintf out "%s:\n" endWhile;
           )
       | CRETURN(loc_expr_option) -> (
+          if is_in_finally then exception_not_caught := false;
           (match loc_expr_option with
               | Some (_, expr) -> compile_expr current_fun env_var env_exceptions offset_local_vars expr
               | None -> ());
@@ -180,9 +181,9 @@ let compile out decl_list =
                 None -> endFunctionLabel
               | Some str_finally -> str_finally) in
             (
-                if not is_known then exception_raised := true;
+                exception_not_caught := if not is_known then true else false;
                 compile_expr current_fun env_var env_exceptions offset_local_vars expr;
-                Printf.fprintf out "\tmovq %s, %%rcx\n" exceptionLabel;
+                Printf.fprintf out "\tmovq $%s, %%rcx\n" str;
                 Printf.fprintf out "\tjmp %s \t# exception thrown \n" exceptionLabel
             )
         )
@@ -192,7 +193,7 @@ let compile out decl_list =
           let new_finallyLabel = match loc_code_option with
             | Some (_, code') -> let new_label = genlab (current_fun^"finally") in (
                 Printf.fprintf out "%s:\n" new_label;
-                compile_code current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars code';
+                compile_code current_fun endFunctionLabel true finallyLabel env_var env_exceptions offset_local_vars code';
                 Printf.fprintf out "\tjmp %s \t# end of finally reached \n" continueLabel;
                 Some new_label
               )
@@ -216,7 +217,7 @@ let compile out decl_list =
               )) env_exceptions str_str_locCode_list in
           (
             Printf.fprintf out "%s:\n" beginLabel;
-            compile_code current_fun endFunctionLabel new_finallyLabel env_var new_env_exceptions offset_local_vars code;
+            compile_code current_fun endFunctionLabel is_in_finally new_finallyLabel env_var new_env_exceptions offset_local_vars code;
             (match new_finallyLabel with
               | Some str_finally -> Printf.fprintf out "\tjmp %s\n" str_finally
               | None -> ());
@@ -319,6 +320,7 @@ let compile out decl_list =
           (* balancing the stack *)
           if !fixed_alignment=1 then
             Printf.fprintf out "\taddq $8, %%rsp\t# to restore the stack alignment\n";
+          
         )
       | OP1(mon_op, (_, expr)) -> let op, is_post, modifies_variable = match mon_op with
           | M_MINUS -> "neg", 0, false
@@ -484,7 +486,7 @@ let compile out decl_list =
             (* a label to reach the end of the function in case of "return statement" *)
             let endFunctionLabel = (genlab (fun_label^"_endFunction")) in
               (
-                compile_code fun_label endFunctionLabel None new_env_var (StringMap.empty) (-(min nb_args 6)*8) code;
+                compile_code fun_label endFunctionLabel false None new_env_var (StringMap.empty) (-(min nb_args 6)*8) code;
                 Printf.fprintf out "%s:\n" endFunctionLabel;
 
                 (* restoring callee-saved registers, and %rbp *)
