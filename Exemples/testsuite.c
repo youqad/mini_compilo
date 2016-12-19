@@ -145,8 +145,8 @@ int main()
  printf(" [o] Testing rule 34 ...\t\t\t");
  if(rule_34()==42) printf("OK.\n"); else printf("ERROR !\n");
  printf(" [o] Testing rule 36 ...\t\t\t");
- try{rule_36();printf("ERROR !\n");}
- catch(E j){if(j==6 && i==66) printf("OK.\n"); else printf("ERROR !\n");}
+ try{rule_36(); printf("ERROR !\n");}
+ catch(E j){if(j==6 && i==66) printf("OK.\n"); else printf("ERROR 2 ! i=%d, j=%d\n", i, j);}
  printf(" [o] Testing rule 37 ...\n");
  try{if(rule_37_1()) printf("  [+] Rule 37 : p |- c' => (p', *, V) ... OK\n");}
  catch(E x){printf("  [x] Wrong implementation of rule 37 !\n");}
@@ -266,11 +266,10 @@ int variables()
  zer();
 
  {
- int i; i=5; 
+ int i; i=5;
  if(i!=5) return 1;
  }
  if(i != 3) return 1;
  if(inci() != 1 || inci() != 2) return 1;
  return 0;
 }
-
