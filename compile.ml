@@ -172,52 +172,65 @@ let compile out decl_list =
           if is_in_finally then
             Printf.fprintf out "\tmovq $0, %s\n" exception_not_caught;
 
+          (match loc_expr_option with
+           | Some (_, expr) -> compile_expr current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars expr
+           | None -> ());
+
+          (* saving %rax (in case of a "finally" without packet)
+             in the calle-saved register %r13 *)
+          Printf.fprintf out "\tmovq %%rax, %%r13\n";
+
           (match finallyLabel with
            | Some str_finally -> (
-             (* in case exceptionLabel is a "finally", the "return point" label is stored
-                in the callee-saved register %rbx *)
-            let returnPointLabel = genlab (current_fun^"returnPoint") in
-            Printf.fprintf out "\tmovq $%s, %%rbx\n" returnPointLabel;
+               (* in case exceptionLabel is a "finally", the "return point" label is stored
+                  in the callee-saved register %rbx *)
+               let returnPointLabel = genlab (current_fun^"returnPoint") in
+               Printf.fprintf out "\tmovq $%s, %%rbx\n" returnPointLabel;
 
-             Printf.fprintf out "\tjmp %s\n" str_finally;
+               Printf.fprintf out "\tjmp %s\n" str_finally;
 
-            Printf.fprintf out "%s: # return from a 'finally' without 'packet'\n" returnPointLabel;
+               Printf.fprintf out "%s: # return from a 'finally' without 'packet'\n" returnPointLabel;
+
+               Printf.fprintf out "\tmovq %%r13, %%rax\n";
              )
-          | None -> ());
-
-          (match loc_expr_option with
-              | Some (_, expr) -> compile_expr current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars expr
-              | None -> ());
+           | None -> ());
 
           (* when a "return statement" is reached : one quits the function *)
           Printf.fprintf out "\tjmp %s \t# return reached : end function\n" endFunctionLabel
         )
       | CTHROW(str, (_, expr)) -> (
-        let is_known = StringMap.mem str env_exceptions in
-        let exceptionLabel = if is_known then StringMap.find str env_exceptions
-          else (match finallyLabel with
-                None -> endFunctionLabel
-              | Some str_finally -> str_finally) in
-            (
-              if not is_known then
-                Printf.fprintf out "\tmovq $1, %s\n" exception_not_caught
-              else
-                Printf.fprintf out "\tmovq $0, %s\n" exception_not_caught;
+          let is_known = StringMap.mem str env_exceptions in
+          let exceptionLabel = if is_known then StringMap.find str env_exceptions
+            else (match finallyLabel with
+                  None -> endFunctionLabel
+                | Some str_finally -> str_finally) in
+          (
+            if not is_known then
+              Printf.fprintf out "\tmovq $1, %s\n" exception_not_caught
+            else
+              Printf.fprintf out "\tmovq $0, %s\n" exception_not_caught;
 
-              compile_expr current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars expr;
-              let stri = StringMap.find str env_strings in
-              Printf.fprintf out "\tmovq $%s, %%rcx\n" stri;
+            compile_expr current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars expr;
 
-              (* in case exceptionLabel is a "finally", the "return point" label is stored
-                 in the callee-saved register %rbx *)
-              let returnPointLabel = genlab (current_fun^"returnPoint") in
-                Printf.fprintf out "\tmovq $%s, %%rbx\n" returnPointLabel;
-              Printf.fprintf out "\tjmp %s \t# exception thrown \n" exceptionLabel;
+            (* saving %rax (in case of a "finally" without packet)
+               in the calle-saved register %r13 *)
+            Printf.fprintf out "\tmovq %%rax, %%r13\n";
 
-              Printf.fprintf out "%s: # return from a 'finally' without 'packet'\n" returnPointLabel;
-              Printf.fprintf out "\tjmp %s \t# uncaught exception thrown : end function\n" endFunctionLabel;
+            let stri = StringMap.find str env_strings in
+            Printf.fprintf out "\tmovq $%s, %%rcx\n" stri;
 
-            )
+            (* in case exceptionLabel is a "finally", the "return point" label is stored
+               in the callee-saved register %rbx *)
+            let returnPointLabel = genlab (current_fun^"returnPoint") in
+            Printf.fprintf out "\tmovq $%s, %%rbx\n" returnPointLabel;
+            Printf.fprintf out "\tjmp %s \t# exception thrown \n" exceptionLabel;
+
+            Printf.fprintf out "%s: # return from a 'finally' without 'packet'\n" returnPointLabel;
+            Printf.fprintf out "\tmovq %%r13, %%rax\n";
+
+            Printf.fprintf out "\tjmp %s \t# uncaught exception thrown : end function\n" endFunctionLabel;
+
+          )
         )
       | CTRY((_, code), str_str_locCode_list, loc_code_option) -> let continueLabel = genlab (current_fun^"tryContinue") and beginLabel = genlab (current_fun^"tryBegin") in
         (
@@ -246,7 +259,7 @@ let compile out decl_list =
                 (
                   Printf.fprintf out "\tmovq %%rax, %s\n" var;
                   compile_code current_fun endFunctionLabel is_in_finally new_finallyLabel new_env_var env_exceptions new_offset_local_vars code';
-                  
+
                   (* balancing the stack *)
                   if not is_known then Printf.fprintf out "\taddq $8, %%rsp\n";
 

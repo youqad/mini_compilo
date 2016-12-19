@@ -228,10 +228,12 @@
 	movq %rax, -8(%rbp)
 	movq $1, .exception_not_caught_106
 	movq $42, %rax
+	movq %rax, %r13
 	movq $.exception_62, %rcx
 	movq $.rule_31returnPoint_108, %rbx
 	jmp .rule_31_endFunction_107 	# exception thrown 
 .rule_31returnPoint_108: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .rule_31_endFunction_107 	# uncaught exception thrown : end function
 	pushq %r10	# save caller-saved registers
 	pushq %r11
@@ -371,6 +373,7 @@
 .rule_32_1_endIf_125:
 .rule_32_1_endIf_120:
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .rule_32_1_endFunction_110 	# return reached : end function
 	addq $8, %rsp
 .rule_32_1_endFunction_110:
@@ -395,6 +398,7 @@
 .rule_32_2finally_132:
 	movq $0, .exception_not_caught_106
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .rule_32_2_endFunction_129 	# return reached : end function
 	jmp *%rbx
 .rule_32_2tryBegin_131:
@@ -407,6 +411,7 @@
 	jmp .rule_32_2finally_132
 .rule_32_2tryContinue_130:
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .rule_32_2_endFunction_129 	# return reached : end function
 .rule_32_2_endFunction_129:
 	movq %rbp, %rsp
@@ -430,10 +435,12 @@
 .rule_32_3finally_136:
 	movq $1, .exception_not_caught_106
 	movq $10, %rax
+	movq %rax, %r13
 	movq $.exception_44, %rcx
 	movq $.rule_32_3returnPoint_137, %rbx
 	jmp .rule_32_3_endFunction_133 	# exception thrown 
 .rule_32_3returnPoint_137: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .rule_32_3_endFunction_133 	# uncaught exception thrown : end function
 	jmp *%rbx
 .rule_32_3tryBegin_135:
@@ -441,6 +448,7 @@
 	jmp .rule_32_3finally_136
 .rule_32_3tryContinue_134:
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .rule_32_3_endFunction_133 	# return reached : end function
 .rule_32_3_endFunction_133:
 	movq %rbp, %rsp
@@ -466,15 +474,18 @@
 	movq %rax, i
 	jmp *%rbx
 .rule_33tryBegin_140:
+	movq $1, %rax
+	movq %rax, %r13
 	movq $.rule_33returnPoint_142, %rbx
 	jmp .rule_33finally_141
 .rule_33returnPoint_142: # return from a 'finally' without 'packet'
-	movq $1, %rax
+	movq %r13, %rax
 	jmp .rule_33_endFunction_138 	# return reached : end function
 	movq $.rule_33tryContinue_139, %rbx
 	jmp .rule_33finally_141
 .rule_33tryContinue_139:
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .rule_33_endFunction_138 	# return reached : end function
 .rule_33_endFunction_138:
 	movq %rbp, %rsp
@@ -498,13 +509,16 @@
 .rule_34finally_146:
 	movq $0, .exception_not_caught_106
 	movq $42, %rax
+	movq %rax, %r13
 	jmp .rule_34_endFunction_143 	# return reached : end function
 	jmp *%rbx
 .rule_34tryBegin_145:
+	movq $0, %rax
+	movq %rax, %r13
 	movq $.rule_34returnPoint_147, %rbx
 	jmp .rule_34finally_146
 .rule_34returnPoint_147: # return from a 'finally' without 'packet'
-	movq $0, %rax
+	movq %r13, %rax
 	jmp .rule_34_endFunction_143 	# return reached : end function
 	movq $.rule_34tryContinue_144, %rbx
 	jmp .rule_34finally_146
@@ -535,10 +549,12 @@
 .rule_36tryBegin_150:
 	movq $1, .exception_not_caught_106
 	movq $6, %rax
+	movq %rax, %r13
 	movq $.exception_62, %rcx
 	movq $.rule_36returnPoint_152, %rbx
 	jmp .rule_36finally_151 	# exception thrown 
 .rule_36returnPoint_152: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .rule_36_endFunction_148 	# uncaught exception thrown : end function
 	movq $.rule_36tryContinue_149, %rbx
 	jmp .rule_36finally_151
@@ -565,15 +581,18 @@
 .rule_37_1finally_156:
 	movq $0, .exception_not_caught_106
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .rule_37_1_endFunction_153 	# return reached : end function
 	jmp *%rbx
 .rule_37_1tryBegin_155:
 	movq $1, .exception_not_caught_106
 	movq $1, %rax
+	movq %rax, %r13
 	movq $.exception_62, %rcx
 	movq $.rule_37_1returnPoint_157, %rbx
 	jmp .rule_37_1finally_156 	# exception thrown 
 .rule_37_1returnPoint_157: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .rule_37_1_endFunction_153 	# uncaught exception thrown : end function
 	movq $.rule_37_1tryContinue_154, %rbx
 	jmp .rule_37_1finally_156
@@ -600,19 +619,23 @@
 .rule_37_2finally_161:
 	movq $1, .exception_not_caught_106
 	movq $1, %rax
+	movq %rax, %r13
 	movq $.exception_64, %rcx
 	movq $.rule_37_2returnPoint_162, %rbx
 	jmp .rule_37_2_endFunction_158 	# exception thrown 
 .rule_37_2returnPoint_162: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .rule_37_2_endFunction_158 	# uncaught exception thrown : end function
 	jmp *%rbx
 .rule_37_2tryBegin_160:
 	movq $1, .exception_not_caught_106
 	movq $1, %rax
+	movq %rax, %r13
 	movq $.exception_62, %rcx
 	movq $.rule_37_2returnPoint_163, %rbx
 	jmp .rule_37_2finally_161 	# exception thrown 
 .rule_37_2returnPoint_163: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .rule_37_2_endFunction_158 	# uncaught exception thrown : end function
 	movq $.rule_37_2tryContinue_159, %rbx
 	jmp .rule_37_2finally_161
@@ -672,10 +695,12 @@
 	je .rule_39_failureIf_175
 	movq $1, .exception_not_caught_106
 	movq -8(%rbp), %rax
+	movq %rax, %r13
 	movq $.exception_77, %rcx
 	movq $.rule_39returnPoint_176, %rbx
 	jmp .rule_39_endFunction_164 	# exception thrown 
 .rule_39returnPoint_176: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .rule_39_endFunction_164 	# uncaught exception thrown : end function
 	jmp .rule_39_endIf_174
 .rule_39_failureIf_175:
@@ -695,6 +720,7 @@
 	je .rule_39_failureIf_180
 	movq $0, .exception_not_caught_106
 	movq -8(%rbp), %rax
+	movq %rax, %r13
 	jmp .rule_39_endFunction_164 	# return reached : end function
 	jmp .rule_39_endIf_179
 .rule_39_failureIf_180:
@@ -747,10 +773,12 @@
 	je .rule_39_failureIf_191
 	movq $1, .exception_not_caught_106
 	movq -24(%rbp), %rax
+	movq %rax, %r13
 	movq $.exception_72, %rcx
 	movq $.rule_39returnPoint_192, %rbx
 	jmp .rule_39finally_167 	# exception thrown 
 .rule_39returnPoint_192: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .rule_39_endFunction_164 	# uncaught exception thrown : end function
 	jmp .rule_39_endIf_190
 .rule_39_failureIf_191:
@@ -768,10 +796,12 @@
 .rule_39_continueCmp_194:
 	cmpq $0, %rax
 	je .rule_39_failureIf_196
+	movq -16(%rbp), %rax
+	movq %rax, %r13
 	movq $.rule_39returnPoint_197, %rbx
 	jmp .rule_39finally_167
 .rule_39returnPoint_197: # return from a 'finally' without 'packet'
-	movq -16(%rbp), %rax
+	movq %r13, %rax
 	jmp .rule_39_endFunction_164 	# return reached : end function
 	jmp .rule_39_endIf_195
 .rule_39_failureIf_196:
@@ -782,15 +812,18 @@
 .rule_39tryBegin_166:
 	movq $0, .exception_not_caught_106
 	movq $9, %rax
+	movq %rax, %r13
 	movq $.exception_14, %rcx
 	movq $.rule_39returnPoint_198, %rbx
 	jmp .rule_39_Ex_exception_183 	# exception thrown 
 .rule_39returnPoint_198: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .rule_39_endFunction_164 	# uncaught exception thrown : end function
 	movq $.rule_39tryContinue_165, %rbx
 	jmp .rule_39finally_167
 .rule_39tryContinue_165:
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .rule_39_endFunction_164 	# return reached : end function
 .rule_39_endFunction_164:
 	movq %rbp, %rsp
@@ -974,6 +1007,7 @@
 	je .main_endExceptionCaught_213
 	jmp .main_endFunction_199	# exception still not caught by the caller
 .main_endExceptionCaught_213:
+	movq %rax, %r13
 	jmp .main_endFunction_199 	# return reached : end function
 	jmp .main_endIf_211
 .main_failureIf_212:
@@ -1152,6 +1186,7 @@
 	je .main_endExceptionCaught_232
 	jmp .main_endFunction_199	# exception still not caught by the caller
 .main_endExceptionCaught_232:
+	movq %rax, %r13
 	jmp .main_endFunction_199 	# return reached : end function
 .main_endIf_229:
 	subq $8, %rsp	# to align the stack on a 16B boundary
@@ -2067,10 +2102,12 @@
 .main_endExceptionCaught_344:
 	movq $1, .exception_not_caught_106
 	movq $0, %rax
+	movq %rax, %r13
 	movq $.exception_85, %rcx
 	movq $.mainreturnPoint_345, %rbx
 	jmp .main_endFunction_199 	# exception thrown 
 .mainreturnPoint_345: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .main_endFunction_199 	# uncaught exception thrown : end function
 	jmp .main_endIf_338
 .main_failureIf_339:
@@ -2937,6 +2974,7 @@
 	jmp .test_comp_endIf_482
 .test_comp_failureIf_483:
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .test_comp_endFunction_479 	# return reached : end function
 .test_comp_endIf_482:
 	movq $3, %rax
@@ -2956,6 +2994,7 @@
 	jmp .test_comp_endIf_486
 .test_comp_failureIf_487:
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .test_comp_endFunction_479 	# return reached : end function
 .test_comp_endIf_486:
 	movq -8(%rbp), %rax
@@ -2975,6 +3014,7 @@
 	jmp .test_comp_endIf_490
 .test_comp_failureIf_491:
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .test_comp_endFunction_479 	# return reached : end function
 .test_comp_endIf_490:
 	movq $0, %rax
@@ -3001,6 +3041,7 @@
 	jmp .test_comp_endIf_496
 .test_comp_failureIf_497:
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .test_comp_endFunction_479 	# return reached : end function
 .test_comp_endIf_496:
 	movq $2, %rax
@@ -3023,6 +3064,7 @@
 .test_comp_endIf_500:
 	movq %rax, -16(%rbp)
 	movq -16(%rbp), %rax
+	movq %rax, %r13
 	jmp .test_comp_endFunction_479 	# return reached : end function
 	addq $16, %rsp
 .test_comp_endFunction_479:
@@ -3970,6 +4012,7 @@
 .test_op_failureIf_627:
 .test_op_endIf_626:
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .test_op_endFunction_502 	# return reached : end function
 	addq $16, %rsp
 .test_op_endFunction_502:
@@ -3992,6 +4035,7 @@
 	movq %rsp, %rbp
 	movq $0, %rax
 	movq %rax, i
+	movq %rax, %r13
 	jmp .zer_endFunction_629 	# return reached : end function
 .zer_endFunction_629:
 	movq %rbp, %rsp
@@ -4014,6 +4058,7 @@
 	movq i, %rax
 	inc %rax
 	movq %rax, i
+	movq %rax, %r13
 	jmp .inci_endFunction_630 	# return reached : end function
 .inci_endFunction_630:
 	movq %rbp, %rsp
@@ -4070,6 +4115,7 @@
 	cmpq $0, %rax
 	je .variables_failureIf_638
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .variables_endFunction_631 	# return reached : end function
 	jmp .variables_endIf_637
 .variables_failureIf_638:
@@ -4096,6 +4142,7 @@
 	cmpq $0, %rax
 	je .variables_failureIf_644
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .variables_endFunction_631 	# return reached : end function
 	jmp .variables_endIf_643
 .variables_failureIf_644:
@@ -4167,11 +4214,13 @@
 	cmpq $0, %rax
 	je .variables_failureIf_658
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .variables_endFunction_631 	# return reached : end function
 	jmp .variables_endIf_657
 .variables_failureIf_658:
 .variables_endIf_657:
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .variables_endFunction_631 	# return reached : end function
 	addq $8, %rsp
 .variables_endFunction_631:

@@ -346,10 +346,12 @@
 	movq %rsp, %rbp
 	movq $1, .exception_not_caught_166
 	movq $25, %rax
+	movq %rax, %r13
 	movq $.exception_121, %rcx
 	movq $.test_throwreturnPoint_168, %rbx
 	jmp .test_throw_endFunction_167 	# exception thrown 
 .test_throwreturnPoint_168: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .test_throw_endFunction_167 	# uncaught exception thrown : end function
 	subq $8, %rsp	# to align the stack on a 16B boundary
 	pushq %r10	# save caller-saved registers
@@ -367,6 +369,7 @@
 	je .test_throw_endExceptionCaught_169
 	jmp .test_throw_endFunction_167	# exception still not caught by the caller
 .test_throw_endExceptionCaught_169:
+	movq %rax, %r13
 	jmp .test_throw_endFunction_167 	# return reached : end function
 .test_throw_endFunction_167:
 	movq %rbp, %rsp
@@ -390,6 +393,7 @@
 	movq $5, %rax
 	movq %rax, -8(%rbp)
 	movq -8(%rbp), %rax
+	movq %rax, %r13
 	jmp .do_nothing_endFunction_170 	# return reached : end function
 	addq $8, %rsp
 .do_nothing_endFunction_170:
@@ -674,6 +678,7 @@
 	jmp .aux_try_no_excep_no_finally_return_endFunction_186	# exception still not caught by the caller
 .aux_try_no_excep_no_finally_return_endExceptionCaught_195:
 	movq $5, %rax
+	movq %rax, %r13
 	jmp .aux_try_no_excep_no_finally_return_endFunction_186 	# return reached : end function
 .aux_try_no_excep_no_finally_returntryContinue_187:
 	subq $8, %rsp	# to align the stack on a 16B boundary
@@ -1126,10 +1131,12 @@
 .aux_try_no_excep_finally_returnreturnPoint_245: # return from a 'finally' without 'packet'
 	jmp .aux_try_no_excep_finally_return_endFunction_226	# exception still not caught by the caller
 .aux_try_no_excep_finally_return_endExceptionCaught_244:
+	movq $5, %rax
+	movq %rax, %r13
 	movq $.aux_try_no_excep_finally_returnreturnPoint_246, %rbx
 	jmp .aux_try_no_excep_finally_returnfinally_229
 .aux_try_no_excep_finally_returnreturnPoint_246: # return from a 'finally' without 'packet'
-	movq $5, %rax
+	movq %r13, %rax
 	jmp .aux_try_no_excep_finally_return_endFunction_226 	# return reached : end function
 	movq $.aux_try_no_excep_finally_returntryContinue_227, %rbx
 	jmp .aux_try_no_excep_finally_returnfinally_229
@@ -1151,6 +1158,7 @@
 	jmp .aux_try_no_excep_finally_return_endFunction_226	# exception still not caught by the caller
 .aux_try_no_excep_finally_return_endExceptionCaught_247:
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .aux_try_no_excep_finally_return_endFunction_226 	# return reached : end function
 .aux_try_no_excep_finally_return_endFunction_226:
 	movq %rbp, %rsp
@@ -1277,6 +1285,7 @@
 .aux_try_no_excep_finally_return_2_endExceptionCaught_261:
 	movq $0, .exception_not_caught_166
 	movq $3, %rax
+	movq %rax, %r13
 	jmp .aux_try_no_excep_finally_return_2_endFunction_256 	# return reached : end function
 	jmp *%rbx
 .aux_try_no_excep_finally_return_2_Ex_exception_262:
@@ -1400,10 +1409,12 @@
 .aux_try_no_excep_finally_return_2returnPoint_275: # return from a 'finally' without 'packet'
 	jmp .aux_try_no_excep_finally_return_2_endFunction_256	# exception still not caught by the caller
 .aux_try_no_excep_finally_return_2_endExceptionCaught_274:
+	movq $5, %rax
+	movq %rax, %r13
 	movq $.aux_try_no_excep_finally_return_2returnPoint_276, %rbx
 	jmp .aux_try_no_excep_finally_return_2finally_259
 .aux_try_no_excep_finally_return_2returnPoint_276: # return from a 'finally' without 'packet'
-	movq $5, %rax
+	movq %r13, %rax
 	jmp .aux_try_no_excep_finally_return_2_endFunction_256 	# return reached : end function
 	movq $.aux_try_no_excep_finally_return_2tryContinue_257, %rbx
 	jmp .aux_try_no_excep_finally_return_2finally_259
@@ -1425,6 +1436,7 @@
 	jmp .aux_try_no_excep_finally_return_2_endFunction_256	# exception still not caught by the caller
 .aux_try_no_excep_finally_return_2_endExceptionCaught_277:
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .aux_try_no_excep_finally_return_2_endFunction_256 	# return reached : end function
 .aux_try_no_excep_finally_return_2_endFunction_256:
 	movq %rbp, %rsp
@@ -1551,10 +1563,12 @@
 .aux_try_no_excep_finally_return_3_endExceptionCaught_291:
 	movq $1, .exception_not_caught_166
 	movq $0, %rax
+	movq %rax, %r13
 	movq $.exception_50, %rcx
 	movq $.aux_try_no_excep_finally_return_3returnPoint_292, %rbx
 	jmp .aux_try_no_excep_finally_return_3_endFunction_286 	# exception thrown 
 .aux_try_no_excep_finally_return_3returnPoint_292: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .aux_try_no_excep_finally_return_3_endFunction_286 	# uncaught exception thrown : end function
 	jmp *%rbx
 .aux_try_no_excep_finally_return_3_Ex_exception_293:
@@ -1678,10 +1692,12 @@
 .aux_try_no_excep_finally_return_3returnPoint_306: # return from a 'finally' without 'packet'
 	jmp .aux_try_no_excep_finally_return_3_endFunction_286	# exception still not caught by the caller
 .aux_try_no_excep_finally_return_3_endExceptionCaught_305:
+	movq $5, %rax
+	movq %rax, %r13
 	movq $.aux_try_no_excep_finally_return_3returnPoint_307, %rbx
 	jmp .aux_try_no_excep_finally_return_3finally_289
 .aux_try_no_excep_finally_return_3returnPoint_307: # return from a 'finally' without 'packet'
-	movq $5, %rax
+	movq %r13, %rax
 	jmp .aux_try_no_excep_finally_return_3_endFunction_286 	# return reached : end function
 	movq $.aux_try_no_excep_finally_return_3tryContinue_287, %rbx
 	jmp .aux_try_no_excep_finally_return_3finally_289
@@ -1703,6 +1719,7 @@
 	jmp .aux_try_no_excep_finally_return_3_endFunction_286	# exception still not caught by the caller
 .aux_try_no_excep_finally_return_3_endExceptionCaught_308:
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .aux_try_no_excep_finally_return_3_endFunction_286 	# return reached : end function
 .aux_try_no_excep_finally_return_3_endFunction_286:
 	movq %rbp, %rsp
@@ -1742,6 +1759,7 @@
 	jmp .test_try_no_excep_finally_return_3_endFunction_309	# exception still not caught by the caller
 .test_try_no_excep_finally_return_3_endExceptionCaught_313:
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .test_try_no_excep_finally_return_3_endFunction_309 	# return reached : end function
 	addq $8, %rsp
 	jmp .test_try_no_excep_finally_return_3tryContinue_310
@@ -1828,6 +1846,7 @@
 .aux_try_excep_finally_return_no_handler_endExceptionCaught_321:
 	movq $0, .exception_not_caught_166
 	movq $9, %rax
+	movq %rax, %r13
 	jmp .aux_try_excep_finally_return_no_handler_endFunction_316 	# return reached : end function
 	jmp *%rbx
 .aux_try_excep_finally_return_no_handler_E2_exception_322:
@@ -1888,10 +1907,12 @@
 .aux_try_excep_finally_return_no_handler_endExceptionCaught_327:
 	movq $1, .exception_not_caught_166
 	movq $5, %rax
+	movq %rax, %r13
 	movq $.exception_75, %rcx
 	movq $.aux_try_excep_finally_return_no_handlerreturnPoint_329, %rbx
 	jmp .aux_try_excep_finally_return_no_handlerfinally_319 	# exception thrown 
 .aux_try_excep_finally_return_no_handlerreturnPoint_329: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .aux_try_excep_finally_return_no_handler_endFunction_316 	# uncaught exception thrown : end function
 	subq $8, %rsp	# to align the stack on a 16B boundary
 	pushq %r10	# save caller-saved registers
@@ -1915,16 +1936,19 @@
 .aux_try_excep_finally_return_no_handlerreturnPoint_331: # return from a 'finally' without 'packet'
 	jmp .aux_try_excep_finally_return_no_handler_endFunction_316	# exception still not caught by the caller
 .aux_try_excep_finally_return_no_handler_endExceptionCaught_330:
+	movq $1, %rax
+	movq %rax, %r13
 	movq $.aux_try_excep_finally_return_no_handlerreturnPoint_332, %rbx
 	jmp .aux_try_excep_finally_return_no_handlerfinally_319
 .aux_try_excep_finally_return_no_handlerreturnPoint_332: # return from a 'finally' without 'packet'
-	movq $1, %rax
+	movq %r13, %rax
 	jmp .aux_try_excep_finally_return_no_handler_endFunction_316 	# return reached : end function
 	movq $.aux_try_excep_finally_return_no_handlertryContinue_317, %rbx
 	jmp .aux_try_excep_finally_return_no_handlerfinally_319
 .aux_try_excep_finally_return_no_handlertryContinue_317:
 	movq $1, %rax
 	neg %rax
+	movq %rax, %r13
 	jmp .aux_try_excep_finally_return_no_handler_endFunction_316 	# return reached : end function
 .aux_try_excep_finally_return_no_handler_endFunction_316:
 	movq %rbp, %rsp
@@ -2228,10 +2252,12 @@
 .aux_try_excep_finally_return_handler_endExceptionCaught_367:
 	movq $0, .exception_not_caught_166
 	movq $5, %rax
+	movq %rax, %r13
 	movq $.exception_79, %rcx
 	movq $.aux_try_excep_finally_return_handlerreturnPoint_369, %rbx
 	jmp .aux_try_excep_finally_return_handler_E5_exception_357 	# exception thrown 
 .aux_try_excep_finally_return_handlerreturnPoint_369: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .aux_try_excep_finally_return_handler_endFunction_341 	# uncaught exception thrown : end function
 	subq $8, %rsp	# to align the stack on a 16B boundary
 	pushq %r10	# save caller-saved registers
@@ -2264,16 +2290,19 @@
 .aux_try_excep_finally_return_handlerreturnPoint_371: # return from a 'finally' without 'packet'
 	jmp .aux_try_excep_finally_return_handler_endFunction_341	# exception still not caught by the caller
 .aux_try_excep_finally_return_handler_endExceptionCaught_370:
+	movq $5, %rax
+	movq %rax, %r13
 	movq $.aux_try_excep_finally_return_handlerreturnPoint_372, %rbx
 	jmp .aux_try_excep_finally_return_handlerfinally_344
 .aux_try_excep_finally_return_handlerreturnPoint_372: # return from a 'finally' without 'packet'
-	movq $5, %rax
+	movq %r13, %rax
 	jmp .aux_try_excep_finally_return_handler_endFunction_341 	# return reached : end function
 	movq $.aux_try_excep_finally_return_handlertryContinue_342, %rbx
 	jmp .aux_try_excep_finally_return_handlerfinally_344
 .aux_try_excep_finally_return_handlertryContinue_342:
 	movq $1, %rax
 	neg %rax
+	movq %rax, %r13
 	jmp .aux_try_excep_finally_return_handler_endFunction_341 	# return reached : end function
 .aux_try_excep_finally_return_handler_endFunction_341:
 	movq %rbp, %rsp
@@ -2510,10 +2539,12 @@
 .aux_try_excep_in_catch_endExceptionCaught_400:
 	movq $1, .exception_not_caught_166
 	movq $21569, %rax
+	movq %rax, %r13
 	movq $.exception_87, %rcx
 	movq $.aux_try_excep_in_catchreturnPoint_402, %rbx
 	jmp .aux_try_excep_in_catchfinally_384 	# exception thrown 
 .aux_try_excep_in_catchreturnPoint_402: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .aux_try_excep_in_catch_endFunction_381 	# uncaught exception thrown : end function
 	pushq %r10	# save caller-saved registers
 	pushq %r11
@@ -2602,10 +2633,12 @@
 .aux_try_excep_in_catch_endExceptionCaught_410:
 	movq $0, .exception_not_caught_166
 	movq $5, %rax
+	movq %rax, %r13
 	movq $.exception_79, %rcx
 	movq $.aux_try_excep_in_catchreturnPoint_412, %rbx
 	jmp .aux_try_excep_in_catch_E5_exception_397 	# exception thrown 
 .aux_try_excep_in_catchreturnPoint_412: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .aux_try_excep_in_catch_endFunction_381 	# uncaught exception thrown : end function
 	subq $8, %rsp	# to align the stack on a 16B boundary
 	pushq %r10	# save caller-saved registers
@@ -2638,16 +2671,19 @@
 .aux_try_excep_in_catchreturnPoint_414: # return from a 'finally' without 'packet'
 	jmp .aux_try_excep_in_catch_endFunction_381	# exception still not caught by the caller
 .aux_try_excep_in_catch_endExceptionCaught_413:
+	movq $5, %rax
+	movq %rax, %r13
 	movq $.aux_try_excep_in_catchreturnPoint_415, %rbx
 	jmp .aux_try_excep_in_catchfinally_384
 .aux_try_excep_in_catchreturnPoint_415: # return from a 'finally' without 'packet'
-	movq $5, %rax
+	movq %r13, %rax
 	jmp .aux_try_excep_in_catch_endFunction_381 	# return reached : end function
 	movq $.aux_try_excep_in_catchtryContinue_382, %rbx
 	jmp .aux_try_excep_in_catchfinally_384
 .aux_try_excep_in_catchtryContinue_382:
 	movq $1, %rax
 	neg %rax
+	movq %rax, %r13
 	jmp .aux_try_excep_in_catch_endFunction_381 	# return reached : end function
 .aux_try_excep_in_catch_endFunction_381:
 	movq %rbp, %rsp
@@ -2748,6 +2784,7 @@
 	subq $8, %rsp
 	movq %rax, -8(%rbp)
 	movq $1, %rax
+	movq %rax, %r13
 	jmp .aux_b2_endFunction_423 	# return reached : end function
 	addq $8, %rsp
 	jmp .aux_b2tryContinue_424
@@ -2756,16 +2793,19 @@
 	subq $8, %rsp
 	movq %rax, -8(%rbp)
 	movq $2, %rax
+	movq %rax, %r13
 	jmp .aux_b2_endFunction_423 	# return reached : end function
 	addq $8, %rsp
 	jmp .aux_b2tryContinue_424
 .aux_b2tryBegin_425:
 	movq $0, .exception_not_caught_166
 	movq $.string_90, %rax
+	movq %rax, %r13
 	movq $.exception_92, %rcx
 	movq $.aux_b2returnPoint_428, %rbx
 	jmp .aux_b2_B_exception_427 	# exception thrown 
 .aux_b2returnPoint_428: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .aux_b2_endFunction_423 	# uncaught exception thrown : end function
 .aux_b2tryContinue_424:
 .aux_b2_endFunction_423:
@@ -2865,20 +2905,23 @@
 .aux_b3finally_440:
 	movq $0, .exception_not_caught_166
 	movq $0, %rax
+	movq %rax, %r13
 	jmp .aux_b3_endFunction_437 	# return reached : end function
 	jmp *%rbx
 .aux_b3_A_exception_441:
 	movq $0, .exception_not_caught_166
 	subq $8, %rsp
 	movq %rax, -8(%rbp)
-	movq $.aux_b3returnPoint_442, %rbx
-	jmp .aux_b3finally_440
-.aux_b3returnPoint_442: # return from a 'finally' without 'packet'
 	movq $1, %rax
 	pushq %rax
 	movq -8(%rbp), %rax
 	popq %rcx
 	addq %rcx, %rax
+	movq %rax, %r13
+	movq $.aux_b3returnPoint_442, %rbx
+	jmp .aux_b3finally_440
+.aux_b3returnPoint_442: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .aux_b3_endFunction_437 	# return reached : end function
 	addq $8, %rsp
 	movq $.aux_b3tryContinue_438, %rbx
@@ -2886,10 +2929,12 @@
 .aux_b3tryBegin_439:
 	movq $0, .exception_not_caught_166
 	movq $2, %rax
+	movq %rax, %r13
 	movq $.exception_96, %rcx
 	movq $.aux_b3returnPoint_443, %rbx
 	jmp .aux_b3_A_exception_441 	# exception thrown 
 .aux_b3returnPoint_443: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .aux_b3_endFunction_437 	# uncaught exception thrown : end function
 	movq $.aux_b3tryContinue_438, %rbx
 	jmp .aux_b3finally_440
@@ -3031,10 +3076,12 @@
 .aux_b6tryBegin_454:
 	movq $1, .exception_not_caught_166
 	movq $2, %rax
+	movq %rax, %r13
 	movq $.exception_103, %rcx
 	movq $.aux_b6returnPoint_461, %rbx
 	jmp .aux_b6finally_455 	# exception thrown 
 .aux_b6returnPoint_461: # return from a 'finally' without 'packet'
+	movq %r13, %rax
 	jmp .aux_b6_endFunction_452 	# uncaught exception thrown : end function
 	movq $.aux_b6tryContinue_453, %rbx
 	jmp .aux_b6finally_455
@@ -3054,6 +3101,7 @@
 	jmp .aux_b6_endFunction_452	# exception still not caught by the caller
 .aux_b6_endExceptionCaught_462:
 	movq -8(%rbp), %rax
+	movq %rax, %r13
 	jmp .aux_b6_endFunction_452 	# return reached : end function
 	addq $8, %rsp
 .aux_b6_endFunction_452:
@@ -3170,10 +3218,12 @@
 	movq %rcx, (%rdx, %rax, 8)
 	movq %rcx, %rax
 	popq %rax
+	movq -8(%rbp), %rax
+	movq %rax, %r13
 	movq $.aux1_b7returnPoint_474, %rbx
 	jmp .aux1_b7finally_473
 .aux1_b7returnPoint_474: # return from a 'finally' without 'packet'
-	movq -8(%rbp), %rax
+	movq %r13, %rax
 	jmp .aux1_b7_endFunction_470 	# return reached : end function
 	movq $.aux1_b7tryContinue_471, %rbx
 	jmp .aux1_b7finally_473
@@ -3236,6 +3286,7 @@
 	jmp .aux2_b7_endFunction_475	# exception still not caught by the caller
 .aux2_b7_endExceptionCaught_477:
 	popq %rcx
+	movq %rax, %r13
 	jmp .aux2_b7_endFunction_475 	# return reached : end function
 	addq $8, %rsp
 .aux2_b7_endFunction_475:
@@ -3332,6 +3383,7 @@
 	pushq %rbp	# base pointer
 	movq %rsp, %rbp
 	movq $42, %rax
+	movq %rax, %r13
 	jmp .aux1_twisted1_endFunction_486 	# return reached : end function
 .aux1_twisted1_endFunction_486:
 	movq %rbp, %rsp
@@ -3397,10 +3449,12 @@
 	inc %rax
 	movq %rax, -8(%rbp)
 	popq %rax
+	movq -8(%rbp), %rax
+	movq %rax, %r13
 	movq $.aux2_twisted1returnPoint_494, %rbx
 	jmp .aux2_twisted1finally_490
 .aux2_twisted1returnPoint_494: # return from a 'finally' without 'packet'
-	movq -8(%rbp), %rax
+	movq %r13, %rax
 	jmp .aux2_twisted1_endFunction_487 	# return reached : end function
 	movq $.aux2_twisted1tryContinue_488, %rbx
 	jmp .aux2_twisted1finally_490
