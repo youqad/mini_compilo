@@ -162,6 +162,8 @@ int main()
   {
    try{
      i = 0; k = 0;
+     printf("j=%d, i=%d, k=%d, h=%d, g=%d", j, i, k, h, g);
+
      j = rule_39(g,h);
      if(j==1 && g == 1 && h == 1 && i==1 && k == 1)
       printf("  [+] %d/9 : p[] |- c1 => p' |- c' => p'' ... OK.\n", tot);
@@ -177,6 +179,7 @@ int main()
      else printf("  [x] Error : execution unexpectedly continued : (%d,%d)\n",g,h);
    }
    catch(E1 V){
+    // printf("g=%d, i=%d, k=%d, V=%d", g, i, k, V);
     if(g == 2 && i == 0 && k == 0 && V == 9){
      if(h==1) printf("  [+] %d/9 : p[] |- c1 => (p', Exc, V) |- c' => (p', Exc, V) ... OK.\n", tot);
      if(h==2) printf("  [+] %d/9 : p[] |- c1 => (p', Exc, V) |- c' => (p', Exc, V) ... OK.\n", tot);

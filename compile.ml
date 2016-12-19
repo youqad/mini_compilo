@@ -235,14 +235,14 @@ let compile out decl_list =
       | CTRY((_, code), str_str_locCode_list, loc_code_option) -> let continueLabel = genlab (current_fun^"tryContinue") and beginLabel = genlab (current_fun^"tryBegin") in
         (
           Printf.fprintf out "\tjmp %s\n" beginLabel;
-          let new_finallyLabel = match loc_code_option with
+          let new_finallyLabel = (match loc_code_option with
             | Some (_, code') -> let new_label = genlab (current_fun^"finally") in (
                 Printf.fprintf out "%s:\n" new_label;
                 compile_code current_fun endFunctionLabel true finallyLabel env_var env_exceptions offset_local_vars code';
                 Printf.fprintf out "\tjmp *%%rbx\n";
                 Some new_label
               )
-            | None -> None in
+            | None -> None) in
 
           let new_env_exceptions = fold_left (fun env (str_excep, str_var, (_,code')) ->
               let exceptionLabel = (genlab (current_fun^"_"^str_excep^"_exception")) in
@@ -258,7 +258,7 @@ let compile out decl_list =
                 let new_env_var = StringMap.add str_var var env_var in
                 (
                   Printf.fprintf out "\tmovq %%rax, %s\n" var;
-                  compile_code current_fun endFunctionLabel is_in_finally new_finallyLabel new_env_var env_exceptions new_offset_local_vars code';
+                  compile_code current_fun endFunctionLabel is_in_finally finallyLabel new_env_var env_exceptions new_offset_local_vars code';
 
                   (* balancing the stack *)
                   if not is_known then Printf.fprintf out "\taddq $8, %%rsp\n";
