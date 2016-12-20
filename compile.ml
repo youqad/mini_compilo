@@ -212,12 +212,13 @@ let compile out decl_list =
 
             compile_expr current_fun endFunctionLabel finallyLabel env_var env_exceptions offset_local_vars expr;
 
-            (* saving %rax (in case of a "finally" without packet)
-               in the calle-saved register %r13 *)
-            Printf.fprintf out "\tmovq %%rax, %%r13\n";
-
             let stri = StringMap.find str env_strings in
             Printf.fprintf out "\tmovq $%s, %%rcx\n" stri;
+
+            (* saving %rcx and %rax (in case of a "finally" without packet)
+               in the calle-saved registers %r12 and %r13 *)
+            Printf.fprintf out "\tmovq %%rcx, %%r12\n";
+            Printf.fprintf out "\tmovq %%rax, %%r13\n";
 
             (* in case exceptionLabel is a "finally", the "return point" label is stored
                in the callee-saved register %rbx *)
@@ -226,6 +227,7 @@ let compile out decl_list =
             Printf.fprintf out "\tjmp %s \t# exception thrown \n" exceptionLabel;
 
             Printf.fprintf out "%s: # return from a 'finally' without 'packet'\n" returnPointLabel;
+            Printf.fprintf out "\tmovq %%r12, %%rcx\n";
             Printf.fprintf out "\tmovq %%r13, %%rax\n";
 
             Printf.fprintf out "\tjmp %s \t# uncaught exception thrown : end function\n" endFunctionLabel;

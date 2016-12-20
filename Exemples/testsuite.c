@@ -162,7 +162,7 @@ int main()
   {
    try{
      i = 0; k = 0;
-     printf("j=%d, i=%d, k=%d, h=%d, g=%d", j, i, k, h, g);
+    //  printf("j=%d, i=%d, k=%d, h=%d, g=%d", j, i, k, h, g);
 
      j = rule_39(g,h);
      if(j==1 && g == 1 && h == 1 && i==1 && k == 1)
