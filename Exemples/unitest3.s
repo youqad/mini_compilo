@@ -346,11 +346,13 @@
 	movq %rsp, %rbp
 	movq $1, .exception_not_caught_166
 	movq $25, %rax
-	movq %rax, %r13
 	movq $.exception_121, %rcx
+	movq %rcx, %r12
+	movq %rax, %r13
 	movq $.test_throwreturnPoint_168, %rbx
 	jmp .test_throw_endFunction_167 	# exception thrown 
 .test_throwreturnPoint_168: # return from a 'finally' without 'packet'
+	movq %r12, %rcx
 	movq %r13, %rax
 	jmp .test_throw_endFunction_167 	# uncaught exception thrown : end function
 	subq $8, %rsp	# to align the stack on a 16B boundary
@@ -1527,11 +1529,13 @@
 .aux_try_no_excep_finally_return_3_endExceptionCaught_279:
 	movq $1, .exception_not_caught_166
 	movq $0, %rax
-	movq %rax, %r13
 	movq $.exception_50, %rcx
+	movq %rcx, %r12
+	movq %rax, %r13
 	movq $.aux_try_no_excep_finally_return_3returnPoint_280, %rbx
 	jmp .aux_try_no_excep_finally_return_3_endFunction_274 	# exception thrown 
 .aux_try_no_excep_finally_return_3returnPoint_280: # return from a 'finally' without 'packet'
+	movq %r12, %rcx
 	movq %r13, %rax
 	jmp .aux_try_no_excep_finally_return_3_endFunction_274 	# uncaught exception thrown : end function
 	jmp *%rbx
@@ -1853,11 +1857,13 @@
 .aux_try_excep_finally_return_no_handler_endExceptionCaught_309:
 	movq $1, .exception_not_caught_166
 	movq $5, %rax
-	movq %rax, %r13
 	movq $.exception_75, %rcx
+	movq %rcx, %r12
+	movq %rax, %r13
 	movq $.aux_try_excep_finally_return_no_handlerreturnPoint_311, %rbx
 	jmp .aux_try_excep_finally_return_no_handlerfinally_303 	# exception thrown 
 .aux_try_excep_finally_return_no_handlerreturnPoint_311: # return from a 'finally' without 'packet'
+	movq %r12, %rcx
 	movq %r13, %rax
 	jmp .aux_try_excep_finally_return_no_handler_endFunction_300 	# uncaught exception thrown : end function
 	subq $8, %rsp	# to align the stack on a 16B boundary
@@ -2174,11 +2180,13 @@
 .aux_try_excep_finally_return_handler_endExceptionCaught_341:
 	movq $0, .exception_not_caught_166
 	movq $5, %rax
-	movq %rax, %r13
 	movq $.exception_79, %rcx
+	movq %rcx, %r12
+	movq %rax, %r13
 	movq $.aux_try_excep_finally_return_handlerreturnPoint_343, %rbx
 	jmp .aux_try_excep_finally_return_handler_E5_exception_335 	# exception thrown 
 .aux_try_excep_finally_return_handlerreturnPoint_343: # return from a 'finally' without 'packet'
+	movq %r12, %rcx
 	movq %r13, %rax
 	jmp .aux_try_excep_finally_return_handler_endFunction_323 	# uncaught exception thrown : end function
 	subq $8, %rsp	# to align the stack on a 16B boundary
@@ -2443,11 +2451,13 @@
 .aux_try_excep_in_catch_endExceptionCaught_369:
 	movq $1, .exception_not_caught_166
 	movq $21569, %rax
-	movq %rax, %r13
 	movq $.exception_87, %rcx
+	movq %rcx, %r12
+	movq %rax, %r13
 	movq $.aux_try_excep_in_catchreturnPoint_370, %rbx
 	jmp .aux_try_excep_in_catch_endFunction_355 	# exception thrown 
 .aux_try_excep_in_catchreturnPoint_370: # return from a 'finally' without 'packet'
+	movq %r12, %rcx
 	movq %r13, %rax
 	jmp .aux_try_excep_in_catch_endFunction_355 	# uncaught exception thrown : end function
 	pushq %r10	# save caller-saved registers
@@ -2528,11 +2538,13 @@
 .aux_try_excep_in_catch_endExceptionCaught_375:
 	movq $0, .exception_not_caught_166
 	movq $5, %rax
-	movq %rax, %r13
 	movq $.exception_79, %rcx
+	movq %rcx, %r12
+	movq %rax, %r13
 	movq $.aux_try_excep_in_catchreturnPoint_377, %rbx
 	jmp .aux_try_excep_in_catch_E5_exception_367 	# exception thrown 
 .aux_try_excep_in_catchreturnPoint_377: # return from a 'finally' without 'packet'
+	movq %r12, %rcx
 	movq %r13, %rax
 	jmp .aux_try_excep_in_catch_endFunction_355 	# uncaught exception thrown : end function
 	subq $8, %rsp	# to align the stack on a 16B boundary
@@ -2695,11 +2707,13 @@
 .aux_b2tryBegin_390:
 	movq $0, .exception_not_caught_166
 	movq $.string_90, %rax
-	movq %rax, %r13
 	movq $.exception_92, %rcx
+	movq %rcx, %r12
+	movq %rax, %r13
 	movq $.aux_b2returnPoint_393, %rbx
 	jmp .aux_b2_B_exception_392 	# exception thrown 
 .aux_b2returnPoint_393: # return from a 'finally' without 'packet'
+	movq %r12, %rcx
 	movq %r13, %rax
 	jmp .aux_b2_endFunction_388 	# uncaught exception thrown : end function
 .aux_b2tryContinue_389:
@@ -2820,11 +2834,13 @@
 .aux_b3tryBegin_404:
 	movq $0, .exception_not_caught_166
 	movq $2, %rax
-	movq %rax, %r13
 	movq $.exception_96, %rcx
+	movq %rcx, %r12
+	movq %rax, %r13
 	movq $.aux_b3returnPoint_407, %rbx
 	jmp .aux_b3_A_exception_406 	# exception thrown 
 .aux_b3returnPoint_407: # return from a 'finally' without 'packet'
+	movq %r12, %rcx
 	movq %r13, %rax
 	jmp .aux_b3_endFunction_402 	# uncaught exception thrown : end function
 	movq $.aux_b3tryContinue_403, %rbx
@@ -2967,11 +2983,13 @@
 .aux_b6tryBegin_418:
 	movq $1, .exception_not_caught_166
 	movq $2, %rax
-	movq %rax, %r13
 	movq $.exception_103, %rcx
+	movq %rcx, %r12
+	movq %rax, %r13
 	movq $.aux_b6returnPoint_425, %rbx
 	jmp .aux_b6finally_419 	# exception thrown 
 .aux_b6returnPoint_425: # return from a 'finally' without 'packet'
+	movq %r12, %rcx
 	movq %r13, %rax
 	jmp .aux_b6_endFunction_416 	# uncaught exception thrown : end function
 	movq $.aux_b6tryContinue_417, %rbx
