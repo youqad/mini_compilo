@@ -42,7 +42,7 @@ let compile out decl_list =
 
   let env_var, env_fun = fold_left add_gdecl_to_envs (StringMap.empty, FunMap.empty) decl_list in
 
-  (* second round : a Map is used to store the labels of strings
+  (* second round : a Map is used to store the labels of strings and exception names
      in a string environment *)
   let rec add_str_to_env_from_decl env = function
     | CDECL(_) -> env
@@ -182,7 +182,7 @@ let compile out decl_list =
 
           (match finallyLabel with
            | Some str_finally -> (
-               (* in case exceptionLabel is a "finally", the "return point" label is stored
+               (* in case returnPointLabel is a "finally", the "return point" label is stored
                   in the callee-saved register %rbx *)
                let returnPointLabel = genlab (current_fun^"returnPoint") in
                Printf.fprintf out "\tmovq $%s, %%rbx\n" returnPointLabel;
@@ -604,17 +604,15 @@ let compile out decl_list =
     iter iter_over_functions decl_list
   )
 
-(* debugging tool :
-   if not (StringMap.mem str env_strings) then (let str_err = (StringMap.fold (fun key value s -> (s^"-"^key)) env_strings "") in failwith ("Erreur 175 ! "^str_err) )
-   else
-*)
-
-
 (*
 
 Exceptions :
 
-  1) get the names of exceptions
-  2)
+  1) get the names of exceptions in the string environment
+  2) implement it, using
+      - to convey exceptions to the caller : a global variable "exception_not_caught"
+      and the rcx register (for packets)
+      - to convey exceptions to the callee : an exception environment
+        listing the current handlers prone to be caught
 
 *)
