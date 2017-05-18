@@ -33,7 +33,7 @@ Younesse Kaddar
 
 ### Section introductive :
 
-1. J'ajoute le nom des exceptions à l'environnement (une Map OCamL) de chaînes de caractères global `env_strings` (qui associe aux chaînes de caractère leur labels en assembleur).
+1. J'ajoute le nom des exceptions à l'environnement (une Map OCamL) de chaînes de caractères globales `env_strings` (qui associe aux chaînes de caractère leur labels en assembleur).
 
 
 2. J'utilise une variable globale `exception_not_caught` (qui vaudra `1` (pour "vrai") ou `0` (pour "faux")), initialisée à `0`, et dont la fonction sera de signaler un paquet d'exception non rattrapé (notamment dans une fonction appelée : pour que la fonction appelante puisse alors tenter de rattraper le paquet après le `call` de la fonction appelée).
